@@ -39,9 +39,13 @@ const birdList = [
     species : 'cyanocitta cristata',
     wingSpan : 43}
 ]
+app.get('/', (rew, res) => {
+    res.send({message: 'nothing here'})
+})
 
 app.get('/birds', (req, res) => {
     res.send({listOfBirds : birdList})
+    console.log(birdList)
 })
 
 app.listen(8080)
