@@ -45,13 +45,20 @@ const birdList = [
     species : 'parus major',
     wingspan : 25.5}
 ]
-app.get('/', (rew, res) => {
+
+app.get('/', (req, res) => {
     res.send({message: 'nothing here'})
 })
 
 app.get('/birds', (req, res) => {
     res.send({listOfBirds : birdList})
     console.log(birdList)
+})
+
+//Anders gennemgang af lektien
+app.get('birds/:id', (req, res ) => {
+    const foundBird = birdList.find(bird => bird.id === Number(req.params.id))
+    res.send({data:foundBird})
 })
 
 app.get('/birds/:name', (req, res) => {
@@ -67,4 +74,6 @@ app.get('/birds/family/:family', (req, res) => {
 })
 
 
-app.listen(8080)
+app.listen(8080, () => {
+    console.log('Server is running on port', 8080)
+})
