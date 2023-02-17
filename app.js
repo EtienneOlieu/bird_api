@@ -145,9 +145,10 @@ app.patch('/birds/:id', (req, res) => {
 });
 
 app.delete('/birds/:id', (req, res) => {
-  const birdToDelete = birdList.find((bird) => bird.id === req.body.id);
+  const birdToDelete = birdList.find((bird) => bird.id === Number(req.params.id));
   if (birdToDelete !== undefined) {
-    birdList.pop(birdToDelete);
+    birdList.splice(birdToDelete, 1);
+    res.send({ data: birdToDelete });
   } else {
     res.send({ data: 'No bird with that id' });
   }
