@@ -141,7 +141,7 @@ app.post('/birds/', (req, res) => {
 });
 
 app.patch('/birds/:id', (req, res) => {
-
+  res.send({});
 });
 
 app.delete('/birds/:id', (req, res) => {
