@@ -53,6 +53,41 @@ const birdList = [
     species: 'parus major',
     wingspan: 25.5,
   },
+  {
+    id: 8,
+    name: 'shrike',
+    family: 'lanidae',
+    species: 'lanius',
+    wingspan: 35,
+  },
+  {
+    id: 9,
+    name: 'black scrub robin',
+    family: 'muscicapidae',
+    species: 'cercotrichas podobe',
+    wingspan: 20,
+  },
+  {
+    id: 10,
+    name: 'andean condor',
+    family: 'cathartidae',
+    species: 'vultur gryphus',
+    wingspan: 330,
+  },
+  {
+    id: 12,
+    name: 'greater bird of paradise',
+    family: 'paradisaeidae',
+    species: 'paradisaea apoda',
+    wingspan: 120,
+  },
+  {
+    id: 15,
+    name: 'scarlet tanager',
+    family: 'cardinalidae',
+    species: 'piranga olivacea',
+    wingspan: 17,
+  },
 ];
 
 app.get('/', (req, res) => {
@@ -66,11 +101,17 @@ app.get('/birds', (req, res) => {
 //  Anders gennemgang af lektien
 app.get('/birds/:id', (req, res) => {
   const foundBird = birdList.find((bird) => bird.id === Number(req.params.id));
+  if (foundBird === undefined) {
+    res.send({ data: 'No such bird' });
+  }
   res.send({ data: foundBird });
 });
 
 app.get('/birds/name/:name', (req, res) => {
   const chosenBird = birdList.find((bird) => bird.name === req.params.name);
+  if (chosenBird === undefined) {
+    res.send({ data: 'No such bird' });
+  }
   res.send({ data: chosenBird });
 });
 
@@ -79,18 +120,41 @@ app.get('/birds/family/:family', (req, res) => {
   res.send({ data: familyBirds });
 });
 
-app.post('/birds/create', (req, res) => {
+app.post('/birds/', (req, res) => {
+  if (birdList.find((bird) => bird.name === req.body.name) === undefined) {
+    const listOfIds = birdList.map((bird) => bird.id);
+    const newId = Math.max(...listOfIds);
+    birdList.push(
+      {
+        id: newId + 1,
+        name: req.body.name,
+        family: req.body.family,
+        species: req.body.species,
+        wingspan: req.body.wingspan,
+      },
+    );
+    const createdBird = birdList.find((bird) => bird.name === req.body.name);
+    res.send({ data: createdBird });
+  } else {
+    res.send({ data: 'that bird already exists' });
+  }
+});
+
+app.patch('/birds/:id', (req, res) => {
 
 });
-app.patch('/birds/edit/:id', (req, res) => {
 
-});
-
-app.delete('/birds/delete/:id', (req, res) => {
-
+app.delete('/birds/:id', (req, res) => {
+  const birdToDelete = birdList.find((bird) => bird.id === req.body.id);
+  if (birdToDelete !== undefined) {
+    birdList.pop(birdToDelete);
+  } else {
+    res.send({ data: 'No bird with that id' });
+  }
 });
 
 const PORT = 8080;
 app.listen(PORT, () => {
+  // eslint-disable-next-line no-console
   console.log('Server is running on port', PORT);
 });
