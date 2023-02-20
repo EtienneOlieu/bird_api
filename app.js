@@ -3,6 +3,8 @@ const express = require('express');
 const app = express();
 app.use(express.json());
 
+// birdList includes examples of birds with non-sequential id's,
+// in order to simulate an SQL table where items might have been deleted.
 const birdList = [
   {
     id: 1,
@@ -141,7 +143,15 @@ app.post('/birds/', (req, res) => {
 });
 
 app.patch('/birds/:id', (req, res) => {
-  res.send({});
+  let birdToPatch = birdList.find((bird) => bird.id === Number(req.params.id));
+
+  if (birdToPatch !== undefined) {
+    birdToPatch = ({ ...birdToPatch, ...req.body });
+    birdList[birdList.findIndex((bird) => bird.id === Number(req.params.id))] = birdToPatch;
+    res.send({ data: birdToPatch });
+  } else {
+    res.send({ data: 'no such bird to edit' });
+  }
 });
 
 app.delete('/birds/:id', (req, res) => {
