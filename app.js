@@ -92,6 +92,8 @@ const birdList = [
   },
 ];
 
+let currentId = Math.max(...birdList.map((bird) => bird.id));
+
 app.get('/', (req, res) => {
   res.send({ message: 'nothing here' });
 });
@@ -124,8 +126,7 @@ app.get('/birds/family/:family', (req, res) => {
 
 app.post('/birds/', (req, res) => {
   if (birdList.find((bird) => bird.name === req.body.name) === undefined) {
-    const listOfIds = birdList.map((bird) => bird.id);
-    const newId = Math.max(...listOfIds);
+    const newId = currentId += 1;
     birdList.push(
       {
         id: newId + 1,
@@ -143,24 +144,25 @@ app.post('/birds/', (req, res) => {
 });
 
 app.patch('/birds/:id', (req, res) => {
-  let birdToPatch = birdList.find((bird) => bird.id === Number(req.params.id));
+  const foundIndex = birdList.findIndex((bird) => bird.id === Number(req.params.id));
 
-  if (birdToPatch !== undefined) {
-    birdToPatch = ({ ...birdToPatch, ...req.body });
+  if (foundIndex === -1) {
+    res.status(404).send({ message: `No bird with id ${req.params.id}` });
+  } else {
+    const foundBird = birdList[foundIndex];
+    const birdToPatch = ({ ...foundBird, ...req.body, id: foundBird.id });
     birdList[birdList.findIndex((bird) => bird.id === Number(req.params.id))] = birdToPatch;
     res.send({ data: birdToPatch });
-  } else {
-    res.send({ data: 'no such bird to edit' });
   }
 });
 
 app.delete('/birds/:id', (req, res) => {
-  const birdToDelete = birdList.find((bird) => bird.id === Number(req.params.id));
-  if (birdToDelete !== undefined) {
-    birdList.splice(birdToDelete, 1);
-    res.send({ data: birdToDelete });
+  const foundIndex = birdList.findIndex((bird) => bird.id === Number(req.params.id));
+  if (foundIndex === -1) {
+    res.status(404).send({ data: foundIndex, message: `No bird found with id ${req.params.id}` });
   } else {
-    res.send({ data: 'No bird with that id' });
+    const deletedBird = birdList.splice(foundIndex, 1)[0];
+    res.send({ data: deletedBird });
   }
 });
 
